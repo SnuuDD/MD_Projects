@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><title>TABLA DE VERDAD</title>
+<script>
+var elem,expr,vars;
+function esbool(chr){return "&|!^".indexOf(chr)!=-1;}
+
+function tabla(){
+	var i,str;
+	elem=document.createElement("pre");
+	expr=prompt("Expresion booleana: \Ingresa los caracteres de la forma (AB) (excepto  \"T\" y \"F\"), despues, con \"& | !\" seleccionas la operacion. Ej. (AB&)").replace(/\s/g,"");
+	vars=[];
+	for(i=0;i<expr.length;i++)if(!esbool(expr[i])&&expr[i]!="T"&&expr[i]!="F"&&varsindex(expr[i])==-1)vars.push([expr[i],-1]);
+	if(vars.length==0)return;
+	str="";
+	for(i=0;i<vars.length;i++)str+=vars[i][0]+" ";
+	elem.innerHTML="<b>"+str+expr+"</b>\n";
+	vars[0][1]=false;
+	truthpartfor(1);
+	vars[0][1]=true;
+	truthpartfor(1);
+	vars[0][1]=-1;
+	document.body.appendChild(elem);
+}
+function parsebool(){
+	var stack,i,idx;
+	console.log(vars);
+	stack=[];
+	for(i=0;i<expr.length;i++){
+		if(expr[i]=="T")stack.push(true);
+		else if(expr[i]=="F")stack.push(false);
+		else if((idx=varsindex(expr[i]))!=-1)stack.push(vars[idx][1]);
+		else if(esbool(expr[i])){
+			switch(expr[i]){
+				case "&":stack.push(stack.pop()&stack.pop());break;
+				case "|":stack.push(stack.pop()|stack.pop());break;
+				case "!":stack.push(!stack.pop());break;
+			}
+		} else alert("Caracter invalido "+expr[i]+" Expresion imposible.");
+		console.log(stack);
+	}
+	return stack[0];
+}
+
+function varsindex(chr){
+	var i;
+	for(i=0;i<vars.length;i++){if(vars[i][0]==chr)return i;}
+	return -1;
+}
+
+function truthpartfor(index){
+	if(index==vars.length){
+		var str,i;
+		str="";
+		for(i=0;i<index;i++)str+=(vars[i][1]?"<b>T</b>":"F")+" ";
+		elem.innerHTML+=str+(parsebool()?"<b>T</b>":"F")+"\n";
+		return;
+	}
+	vars[index][1]=false;
+	truthpartfor(index+1);
+	vars[index][1]=true;
+	truthpartfor(index+1);
+	vars[index][1]=-1;
+}
+
+</script></head><center><body onload="tabla()"></body></center></html>
